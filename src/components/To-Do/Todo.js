@@ -12,6 +12,7 @@ const obj = {
 
 function Todo() {
   const time = Timer();
+  const timeStr = time.toLocaleString();
   const [value, setValue] = useState([]);
   const [modal, setModal] = useState(false);
   console.log(value);
@@ -30,7 +31,7 @@ function Todo() {
         {
           ...obj,
           text: text,
-          time: time,
+          time: timeStr,
           textLength: text.length,
           id: uuidv4(),
         },

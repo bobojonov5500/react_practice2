@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import Timer from "../api/Timer";
+// import Timer from "../api/Timer";
 import Modal from "./Modal";
 
 const obj = {
@@ -11,14 +11,33 @@ const obj = {
 };
 
 function Todo() {
-  const time = Timer();
-  const timeStr = time.toLocaleString();
+  const Currenttime = new Date().toLocaleString();
   const [value, setValue] = useState([]);
   const [modal, setModal] = useState(false);
-  console.log(value);
-  const addModal = () => {
+  const [updatetext, setupdatetext] = useState("");
+  const [currentID, setcurrentID] = useState(null);
+  const addModal = (id) => {
     setModal(!modal);
-    console.log(2);
+    if (!modal) {
+      const text = value.filter((item) => {
+        return item.id === id;
+      });
+      setcurrentID(id);
+      setupdatetext(text[0].text);
+    }
+  };
+  const handleTextchange = (e) => {
+    setupdatetext(e.target.value);
+  };
+
+  const saveEdit = () => {
+    const updateValue = value.map((item) => {
+      return item.id === currentID
+        ? { ...item, text: updatetext, textLength: updatetext.length,time:Currenttime }
+        : item;
+    });
+    setValue(updateValue);
+    setModal(false);
   };
 
   const inputvalue = useRef();
@@ -31,7 +50,7 @@ function Todo() {
         {
           ...obj,
           text: text,
-          time: timeStr,
+          time: Currenttime,
           textLength: text.length,
           id: uuidv4(),
         },
@@ -76,11 +95,20 @@ function Todo() {
           </button>
         </form>
         <div className="max-w-screen-md mt-3 ">
-          {modal ? <Modal addModal={addModal} /> : ""}
+          {modal ? (
+            <Modal
+              addModal={addModal}
+              updatetext={updatetext}
+              saveEdit={saveEdit}
+              handleTextchange={handleTextchange}
+            />
+          ) : (
+            ""
+          )}
           {value.length > 0 ? (
             <h1 className="mb-3 text-xl font-mono">
               {" "}
-              There has : {value.length} item
+              There is : {value.length} item
             </h1>
           ) : (
             ""
@@ -112,7 +140,7 @@ function Todo() {
                         delete
                       </button>
                       <button
-                        onClick={addModal}
+                        onClick={() => addModal(item.id)}
                         className="active:text-slate-500 border rounded-md bg-blue-600 text-white  py-1 px-2"
                       >
                         edit

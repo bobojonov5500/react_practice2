@@ -1,6 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-// import Timer from "../api/Timer";
 import Modal from "./Modal";
 
 const obj = {
@@ -30,10 +29,26 @@ function Todo() {
     setupdatetext(e.target.value);
   };
 
+  useEffect(() => {
+    const savetodos = localStorage.getItem("todos");
+    if (savetodos) {
+      setValue(JSON.parse(savetodos));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(value));
+  }, [value]);
+
   const saveEdit = () => {
     const updateValue = value.map((item) => {
       return item.id === currentID
-        ? { ...item, text: updatetext, textLength: updatetext.length,time:Currenttime }
+        ? {
+            ...item,
+            text: updatetext,
+            textLength: updatetext.length,
+            time: Currenttime,
+          }
         : item;
     });
     setValue(updateValue);
